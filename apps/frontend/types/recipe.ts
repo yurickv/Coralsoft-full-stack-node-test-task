@@ -17,7 +17,7 @@ export interface Recipe {
 
 export type CreateRecipeInput = Omit<Recipe, 'createdAt' | 'updatedAt'>;
 
-export type UpdateRecipeInput = Partial<CreateRecipeInput>; 
+export type UpdateRecipeInput = Partial<CreateRecipeInput>;
 
 export interface Category {
   title: string;

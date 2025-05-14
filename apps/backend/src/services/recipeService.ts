@@ -4,8 +4,51 @@ import axios from 'axios';
 class RecipeService {
   private recipes: Recipe[] = [];
 
-  async getAllRecipes(): Promise<Recipe[]> {
-    return this.recipes;
+  async getAllRecipes(
+    page = 1,
+    pageSize = 10,
+    category?: string,
+    area?: string,
+    searchQuery?: string
+  ): Promise<{
+    content: Recipe[];
+    totalPages: number;
+    totalItems: number;
+    currentPage: number;
+  }> {
+    // фільтрація
+    let filteredRecipes = this.recipes;
+
+    if (category) {
+      filteredRecipes = filteredRecipes.filter(
+        (recipe) => recipe.category.toLowerCase() === category.toLowerCase()
+      );
+    }
+
+    if (area) {
+      filteredRecipes = filteredRecipes.filter(
+        (recipe) => recipe.area.toLowerCase() === area.toLowerCase()
+      );
+    }
+
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      filteredRecipes = filteredRecipes.filter((recipe) => recipe.name.toLowerCase().includes(q));
+    }
+
+    // пагінація
+    const totalItems = filteredRecipes.length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const content = filteredRecipes.slice(start, end);
+
+    return {
+      content,
+      totalPages,
+      totalItems,
+      currentPage: page,
+    };
   }
 
   async getRecipeById(id: string): Promise<Recipe | null> {

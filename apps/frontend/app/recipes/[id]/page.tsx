@@ -1,7 +1,23 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getRecipe, deleteRecipe } from '../../../lib/api';
-import { notFound, redirect } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { PageHeader } from '../../../components/PageHeader';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
+interface Recipe {
+  id: string;
+  name: string;
+  image?: string;
+  prepTime?: number;
+  cookTime?: number;
+  servings?: number;
+  description?: string;
+  ingredients: string[];
+  instructions: string;
+}
 
 interface RecipePageProps {
   params: {
@@ -9,33 +25,54 @@ interface RecipePageProps {
   };
 }
 
-export default async function RecipeDetailsPage({ params }: RecipePageProps) {
-  const recipe = await getRecipe(params.id);
-  
-  if (!recipe) {
-    notFound();
-  }
+export default function RecipeDetailsPage({ params }: RecipePageProps) {
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const router = useRouter();
 
-  async function handleDelete() {
-    await deleteRecipe(params.id);
+  useEffect(() => {
+    const fetchRecipe = async () => {
+      const res = await fetch(`${API_URL}/api/recipes/${params.id}`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        setRecipe(data);
+      }
+    };
 
-    redirect('/recipes');
-  }
+    fetchRecipe();
+  }, [params.id, router]);
+
+  const handleDelete = async () => {
+    const confirmed = confirm('Are you sure you want to delete this recipe?');
+    if (!confirmed) return;
+
+    const res = await fetch(`${API_URL}/api/recipes/${params.id}`, {
+      method: 'DELETE',
+    });
+
+    if (res.ok) {
+      router.push('/recipes');
+    } else {
+      alert('Failed to delete recipe');
+    }
+  };
+
+  if (!recipe) return <div>Loading...</div>;
 
   return (
     <div className="container mx-auto p-4">
-      <PageHeader title={recipe.name} extraButtons={
-        <div className="flex gap-2">
-          <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-secondary">
-            Edit
-          </Link>
-          <form action={handleDelete}>
-            <button type="submit" className="btn btn-secondary">
+      <PageHeader
+        title={recipe.name}
+        extraButtons={
+          <div className="flex gap-2">
+            <Link href={`/recipes/${recipe.id}/edit`} className="btn btn-secondary">
+              Edit
+            </Link>
+            <button onClick={handleDelete} className="btn btn-secondary">
               Delete
             </button>
-          </form>
-        </div>
-      }  />
+          </div>
+        }
+      />
 
       {recipe.image && (
         <img
@@ -78,7 +115,9 @@ export default async function RecipeDetailsPage({ params }: RecipePageProps) {
           <h2 className="text-xl font-semibold mb-4">Ingredients</h2>
           <ul className="list-disc list-inside space-y-2">
             {recipe.ingredients.map((ingredient, index) => (
-              <li key={index} className="text-gray-600">{ingredient}</li>
+              <li key={index} className="text-gray-600">
+                {ingredient}
+              </li>
             ))}
           </ul>
         </div>
@@ -90,4 +129,4 @@ export default async function RecipeDetailsPage({ params }: RecipePageProps) {
       </div>
     </div>
   );
-} 
+}

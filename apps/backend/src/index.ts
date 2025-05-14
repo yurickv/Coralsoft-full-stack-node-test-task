@@ -13,13 +13,20 @@ app.use(express.json());
 // Recipe routes
 app.get('/api/recipes', async (req: Request, res: Response) => {
   try {
-    const recipes = await recipeService.getAllRecipes();
-    res.json(recipes);
+    const page = parseInt(req.query.page as string) || 1;
+    const pageSize = parseInt(req.query.pageSize as string) || 10;
+    const category = req.query.category as string | undefined;
+    const area = req.query.area as string | undefined;
+    const searchQuery = req.query.q as string | undefined;
+
+    const result = await recipeService.getAllRecipes(page, pageSize, category, area, searchQuery);
+    res.json(result);
   } catch (error) {
     console.error('Error fetching recipes:', error);
     res.status(500).json({ error: 'Failed to fetch recipes' });
   }
 });
+
 app.get('/api/recipes/random', async (req: Request, res: Response) => {
   try {
     const recipe = await getRandomRecipe();
@@ -114,7 +121,7 @@ app.get('/api/recipes/starred', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/recipes/:id/toggle-star', async (req: Request, res: Response) => {
+app.post('/api/recipes/toggle-star/:id', async (req: Request, res: Response) => {
   try {
     const recipe = await recipeService.toggleStar(req.params.id);
     if (!recipe) {

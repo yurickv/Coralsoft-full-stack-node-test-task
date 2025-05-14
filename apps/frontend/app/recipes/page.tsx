@@ -1,54 +1,74 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getRecipes } from '../../lib/api';
-import { RC } from '../../components/RC';
-import { RecipeSearch } from '../../components/RecipeSearch';
+import { useEffect, useState } from 'react';
+import { RecipesFilters } from '../../components/RecipesFilters';
 import { Recipe } from '../../types/recipe';
+import { RecipeCard } from '../../components/RecipeCard';
+import { Pagination } from '../../components/Pagintion';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 export default function RecipesPage() {
+  const [categories, setCategories] = useState<string[]>([]);
+  const [areas, setAreas] = useState<string[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState({ category: '', area: '' });
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedArea, setSelectedArea] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    const filtered = recipes.filter(recipe => {
-      const matchesSearch = recipe.name.startsWith(query) ||
-        recipe.description.endsWith(query);
+  const limit = 9;
 
-      return matchesSearch
+  const fetchRecipes = async () => {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+      ...(searchQuery && { q: searchQuery }),
+      ...(selectedCategory && { category: selectedCategory }),
+      ...(selectedArea && { area: selectedArea }),
     });
 
-    setFilteredRecipes(filtered);
-  };
+    const res = await fetch(`${API_URL}/recipes?${params.toString()}`);
+    const data = await res.json();
 
-  const handleFilterChange = (newFilters: { category: string; area: string }) => {
-    setFilters(newFilters);
-    const filtered = recipes.filter(recipe => {
-      const matchesCategory = recipe.category === newFilters.category;
-      const matchesArea = recipe.area === newFilters.area;
-
-      return matchesCategory && matchesArea;
-    });
-
-    setFilteredRecipes(filtered);
-  };
-
-  // Load initial recipes
-  const loadRecipes = async () => {
-    setIsLoading(true);
-    const data = await getRecipes();
-    setRecipes(data);
-    setFilteredRecipes(data);
+    setRecipes(data.content);
+    setTotalPages(data.totalPages);
   };
 
   useEffect(() => {
-    loadRecipes();
-  }, [recipes]);
+    // Fetch categories and areas metadata
+    const fetchMetadata = async () => {
+      const [categoriesRes, areasRes] = await Promise.all([
+        fetch(`${API_URL}/categories`, { cache: 'no-store' }),
+        fetch(`${API_URL}/areas`, { cache: 'no-store' }),
+      ]);
+
+      if (!categoriesRes.ok || !areasRes.ok) throw new Error('Failed to fetch metadata');
+
+      const [categoriesData, areasData] = await Promise.all([
+        categoriesRes.json(),
+        areasRes.json(),
+      ]);
+
+      setCategories(categoriesData.map((c: { strCategory: string }) => c.strCategory));
+      setAreas(areasData.map((a: { strArea: string }) => a.strArea));
+    };
+
+    fetchMetadata();
+  }, []);
+
+  useEffect(() => {
+    fetchRecipes();
+  }, [page, searchQuery, selectedCategory, selectedArea]);
+
+  const handleReset = () => {
+    setSearchQuery('');
+    setSelectedCategory('');
+    setSelectedArea('');
+    setPage(1);
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -63,25 +83,34 @@ export default function RecipesPage() {
           </Link>
         </div>
       </div>
-
-      <RecipeSearch
-        onSearch={handleSearch}
-        onFilterChange={handleFilterChange}
+      {/* Render the filters */}
+      <RecipesFilters
+        categories={categories}
+        areas={areas}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        selectedArea={selectedArea}
+        setSelectedArea={setSelectedArea}
+        handleReset={handleReset}
       />
 
-      {isLoading && <div className="text-center text-gray-600">Loading...</div>}
+      {/* Recipe List */}
+      {recipes.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+          </div>
 
-      {filteredRecipes.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRecipes.slice(4, 12).map(recipe => (
-            <RC recipe={recipe} />
-          ))}
-          {/* TODO: Add pagination */}
-          <p>Pagination</p>
-        </div>
+          {/* Pagination */}
+          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        </>
       ) : (
-        <div className="text-center text-gray-600">No recipes found</div>
+        <div className="text-center text-gray-600 mt-6">No recipes found</div>
       )}
     </div>
   );
-} 
+}
