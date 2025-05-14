@@ -21,9 +21,9 @@ export interface AreasResponse {
 
 export interface RandomMealResponse {
   meals: Array<{
-    meal: string;
+    strMeal: string;
     strInstructions: string;
-    cat: string;
+    strCategory: string;
     strArea: string;
     tags: string;
     strMealThumb: string;
@@ -53,21 +53,26 @@ export async function getAreas(): Promise<Area[]> {
 
 export async function getRandomRecipe(): Promise<Recipe> {
   try {
-    const response = await axios.get<RandomMealResponse>(`${BASE_URL}/random.php`);
-    const meal = response.data.meals[0];
-    
-    // Extract ingredients (they come as strIngredient1, strIngredient2, etc.)
+    const response = await axios.get(`${BASE_URL}/random.php`);
+    const data = response.data;
+
+    if (!data.meals || !data.meals[0]) {
+      throw new Error('No random meal returned from API');
+    }
+
+    const meal = data.meals[0];
+
     const ingredients = Object.entries(meal)
       .filter(([key, value]) => key.startsWith('strIngredient') && value)
       .map(([_, value]) => value as string);
 
     return {
       id: Math.random().toString(36).substring(2, 9),
-      name: meal.meal,
+      name: meal.strMeal,
       description: meal.strInstructions?.substring(0, 200) || '',
-      category: meal.cat,
+      category: meal.strCategory,
       area: meal.strArea,
-      tags: meal.tags,
+      tags: meal.strTags,
       ingredients,
       instructions: meal.strInstructions || '',
       image: meal.strMealThumb,
@@ -78,4 +83,4 @@ export async function getRandomRecipe(): Promise<Recipe> {
     console.error('Error fetching random recipe from TheMealDB:', error);
     throw new Error('Failed to fetch random recipe');
   }
-} 
+}

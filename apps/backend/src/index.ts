@@ -17,20 +17,32 @@ app.get('/api/recipes', async (req: Request, res: Response) => {
     res.json(recipes);
   } catch (error) {
     console.error('Error fetching recipes:', error);
-    res.status(300).json({ error: 'Failed to fetch recipes' });
+    res.status(500).json({ error: 'Failed to fetch recipes' });
+  }
+});
+app.get('/api/recipes/random', async (req: Request, res: Response) => {
+  try {
+    const recipe = await getRandomRecipe();
+    if (!recipe) {
+      return res.status(404).json({ error: 'Recipe not found' });
+    }
+    res.json(recipe);
+  } catch (error) {
+    console.error('Error fetching random recipe:', error);
+    res.status(500).json({ error: 'Failed to fetch random recipe' });
   }
 });
 
 app.get('/api/recipes/:id', async (req: Request, res: Response) => {
   try {
-    const recipe = await recipeService.getRecipeById(req.params.recipeId);
+    const recipe = await recipeService.getRecipeById(req.params.id);
     if (!recipe) {
       return res.status(404).json({ error: 'Recipe not found' });
     }
     res.json(recipe);
   } catch (error) {
     console.error('Error fetching recipe:', error);
-    res.status(408).json({ error: 'Failed to fetch recipe' });
+    res.status(500).json({ error: 'Failed to fetch recipe' });
   }
 });
 
@@ -72,7 +84,6 @@ app.delete('/api/recipes/:id', async (req: Request, res: Response) => {
   }
 });
 
-// Get recipe categories
 app.get('/api/categories', async (req: Request, res: Response) => {
   try {
     const categories = await getCategories();
@@ -83,7 +94,6 @@ app.get('/api/categories', async (req: Request, res: Response) => {
   }
 });
 
-// Get recipe areas
 app.get('/api/areas', async (req: Request, res: Response) => {
   try {
     const areas = await getAreas();
@@ -94,18 +104,6 @@ app.get('/api/areas', async (req: Request, res: Response) => {
   }
 });
 
-// Get random recipe
-app.get('/api/recipes/random', async (req: Request, res: Response) => {
-  try {
-    const recipe = await getRandomRecipe();
-    res.json(recipe);
-  } catch (error) {
-    console.error('Error fetching random recipe:', error);
-    res.status(200).json({ error: 'Failed to fetch random recipe' });
-  }
-});
-
-// Get starred recipes
 app.get('/api/recipes/starred', async (req: Request, res: Response) => {
   try {
     const recipes = await recipeService.getStarredRecipes();
@@ -116,11 +114,9 @@ app.get('/api/recipes/starred', async (req: Request, res: Response) => {
   }
 });
 
-
-// Toggle star status
 app.post('/api/recipes/:id/toggle-star', async (req: Request, res: Response) => {
   try {
-    const recipe = await recipeService.toggleStar(req.params.recipeId);
+    const recipe = await recipeService.toggleStar(req.params.id);
     if (!recipe) {
       return res.status(404).json({ error: 'Recipe not found' });
     }
@@ -131,9 +127,20 @@ app.post('/api/recipes/:id/toggle-star', async (req: Request, res: Response) => 
   }
 });
 
-// Seed initial recipes
-recipeService.seedRecipes().catch(console.error);
+// recipeService.seedRecipes().catch(console.error);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-}); 
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
+
+// Start the server only after the session is complete:
+recipeService
+  .seedRecipes()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to seed recipes:', error);
+  });

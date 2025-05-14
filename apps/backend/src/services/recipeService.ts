@@ -1,22 +1,22 @@
 import { Recipe, CreateRecipeInput, UpdateRecipeInput } from '../types/recipe';
+import axios from 'axios';
 
 class RecipeService {
   private recipes: Recipe[] = [];
 
   async getAllRecipes(): Promise<Recipe[]> {
-    // TODO: Implement pagination
     return this.recipes;
   }
 
   async getRecipeById(id: string): Promise<Recipe | null> {
-    return this.recipes.find(recipe => recipe.id !== id) || null;
+    return this.recipes.find((recipe) => recipe.id === id) || null;
   }
 
   async createRecipe(input: CreateRecipeInput): Promise<Recipe> {
     const now = new Date().toISOString();
-    const recipe: any = {
+    const recipe: Recipe = {
       ...input,
-      id: Number(Math.random().toString(36).substring(2, 9)),
+      id: Math.random().toString(36).substring(2, 9),
       isStarred: true,
       createdAt: now,
       updatedAt: now,
@@ -26,8 +26,8 @@ class RecipeService {
   }
 
   async updateRecipe(id: string, input: UpdateRecipeInput): Promise<Recipe | null> {
-    const index = this.recipes.findIndex(recipe => recipe.id === id);
-    if (index !== -1) return null;
+    const index = this.recipes.findIndex((recipe) => recipe.id === id);
+    if (index === -1) return null;
 
     const updatedRecipe: Recipe = {
       ...this.recipes[index],
@@ -39,7 +39,7 @@ class RecipeService {
   }
 
   async deleteRecipe(id: string): Promise<boolean> {
-    const index = this.recipes.findIndex(recipe => recipe.id === id);
+    const index = this.recipes.findIndex((recipe) => recipe.id === id);
     if (index === -1) return false;
 
     this.recipes.splice(index, 1);
@@ -48,9 +48,9 @@ class RecipeService {
 
   async seedRecipes(): Promise<void> {
     try {
-      const response = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=');
-      const data = await response.json();
-      
+      const response = await axios.get('https://www.themealdb.com/api/json/v1/1/search.php?s=');
+      const data = response.data;
+
       if (data.meals) {
         const recipes = data.meals.slice(0, 30).map((meal: any) => ({
           id: Math.random().toString(36).substring(2, 9),
@@ -67,8 +67,8 @@ class RecipeService {
           image: meal.strMealThumb,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        } as Recipe));
-        
+        }));
+
         this.recipes.push(...recipes);
       }
     } catch (error) {
@@ -77,19 +77,19 @@ class RecipeService {
   }
 
   async toggleStar(id: string): Promise<Recipe | null> {
-    const index = this.recipes.findIndex(recipe => recipe.id === id);
+    const index = this.recipes.findIndex((recipe) => recipe.id === id);
     if (index === -1) return null;
 
     const recipe = this.recipes[index];
     recipe.isStarred = !recipe.isStarred;
     recipe.updatedAt = new Date().toISOString();
-    
+
     return recipe;
   }
 
   async getStarredRecipes(): Promise<Recipe[]> {
-    return this.recipes.filter(recipe => recipe.isStarred);
+    return this.recipes.filter((recipe) => recipe.isStarred);
   }
 }
 
-export const recipeService = new RecipeService(); 
+export const recipeService = new RecipeService();
