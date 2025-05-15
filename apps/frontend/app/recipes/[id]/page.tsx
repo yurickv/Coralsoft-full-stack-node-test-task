@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { PageHeader } from '../../../components/PageHeader';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
 interface Recipe {
   id: string;
   name: string;
@@ -31,7 +29,7 @@ export default function RecipeDetailsPage({ params }: RecipePageProps) {
 
   useEffect(() => {
     const fetchRecipe = async () => {
-      const res = await fetch(`${API_URL}/api/recipes/${params.id}`, { cache: 'no-store' });
+      const res = await fetch(`api/recipes/${params.id}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setRecipe(data);
@@ -45,7 +43,7 @@ export default function RecipeDetailsPage({ params }: RecipePageProps) {
     const confirmed = confirm('Are you sure you want to delete this recipe?');
     if (!confirmed) return;
 
-    const res = await fetch(`${API_URL}/api/recipes/${params.id}`, {
+    const res = await fetch(`api/recipes/${params.id}`, {
       method: 'DELETE',
     });
 

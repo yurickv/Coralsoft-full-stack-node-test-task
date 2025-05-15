@@ -2,13 +2,12 @@ import { redirect } from 'next/navigation';
 import { RecipeForm } from '../../../components/RecipeForm';
 import { CreateRecipeInput } from '../../../types/recipe';
 import { PageHeader } from '../../../components/PageHeader';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 export default function NewRecipePage() {
   async function handleSubmit(data: CreateRecipeInput) {
     'use server';
 
-    const res = await fetch(`${API_URL}/recipes/new`, {
+    const res = await fetch(`api/recipes/new`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

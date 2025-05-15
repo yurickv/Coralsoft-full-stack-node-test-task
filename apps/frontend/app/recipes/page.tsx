@@ -7,8 +7,6 @@ import { Recipe } from '../../types/recipe';
 import { RecipeCard } from '../../components/RecipeCard';
 import { Pagination } from '../../components/Pagintion';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-
 export default function RecipesPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [areas, setAreas] = useState<string[]>([]);
@@ -31,7 +29,7 @@ export default function RecipesPage() {
         ...(selectedArea && { area: selectedArea }),
       });
 
-      const res = await fetch(`${API_URL}/recipes?${params.toString()}`);
+      const res = await fetch(`api/recipes?${params.toString()}`);
 
       if (!res.ok) {
         throw new Error(`Failed to fetch recipes: ${res.status}`);
@@ -49,8 +47,8 @@ export default function RecipesPage() {
     // Fetch categories and areas metadata
     const fetchMetadata = async () => {
       const [categoriesRes, areasRes] = await Promise.all([
-        fetch(`${API_URL}/categories`, { cache: 'no-store' }),
-        fetch(`${API_URL}/areas`, { cache: 'no-store' }),
+        fetch(`api/categories`, { cache: 'no-store' }),
+        fetch(`api/areas`, { cache: 'no-store' }),
       ]);
 
       if (!categoriesRes.ok || !areasRes.ok) throw new Error('Failed to fetch metadata');
