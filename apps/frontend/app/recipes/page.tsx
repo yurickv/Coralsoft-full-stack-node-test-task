@@ -6,6 +6,7 @@ import { RecipesFilters } from '../../components/RecipesFilters';
 import { Recipe } from '../../types/recipe';
 import { RecipeCard } from '../../components/RecipeCard';
 import { Pagination } from '../../components/Pagintion';
+export const dynamic = 'force-dynamic';
 
 export default function RecipesPage() {
   const [categories, setCategories] = useState<string[]>([]);
