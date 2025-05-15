@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_URL = process.env.NEXT_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_API_URL || 'http://localhost:3001';
 
 export async function GET(req: NextRequest) {
   try {
-    const res = await fetch(`${API_URL}/recipes/random`);
+    const res = await fetch(`${API_URL}/api/recipes/random`);
 
     if (!res.ok) {
       const errorBody = await res.text();

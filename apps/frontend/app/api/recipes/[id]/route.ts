@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { UpdateRecipeInput } from '../../../../types/recipe';
 
-const API_URL = process.env.NEXT_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_API_URL || 'http://localhost:3001';
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
-  const res = await fetch(`${API_URL}/recipes/${params.id}`, { cache: 'no-store' });
+  const res = await fetch(`${API_URL}/api/recipes/${params.id}`, { cache: 'no-store' });
 
   if (!res.ok) {
     console.error(`Failed to fetch recipe: ${res.status} ${res.statusText}`);

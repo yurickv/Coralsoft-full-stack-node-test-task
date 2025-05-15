@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_URL = process.env.NEXT_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_API_URL || 'http://localhost:3001';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   if (area) params.set('area', area);
   if (q) params.set('q', q);
 
-  const res = await fetch(`${API_URL}/recipes?${params.toString()}`, {
+  const res = await fetch(`${API_URL}/api/recipes?${params.toString()}`, {
     cache: 'no-store',
   });
 

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_URL = process.env.NEXT_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_API_URL || 'http://localhost:3001';
 
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
 
-    const res = await fetch(`${API_URL}/recipes`, {
+    const res = await fetch(`${API_URL}/api/recipes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
