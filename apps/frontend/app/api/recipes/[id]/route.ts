@@ -17,7 +17,7 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   const body: UpdateRecipeInput = await req.json();
-  const res = await fetch(`${API_URL}/recipes/${params.id}`, {
+  const res = await fetch(`${API_URL}/api/recipes/${params.id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -27,7 +27,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 export async function DELETE(_: Request, { params }: { params: { id: string } }) {
-  const res = await fetch(`${API_URL}/recipes/${params.id}`, {
+  const res = await fetch(`${API_URL}/api/recipes/${params.id}`, {
     method: 'DELETE',
   });
 

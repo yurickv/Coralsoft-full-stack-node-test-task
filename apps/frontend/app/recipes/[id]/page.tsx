@@ -29,7 +29,7 @@ export default function RecipeDetailsPage({ params }: RecipePageProps) {
 
   useEffect(() => {
     const fetchRecipe = async () => {
-      const res = await fetch(`api/recipes/${params.id}`, { cache: 'no-store' });
+      const res = await fetch(`/api/recipes/${params.id}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setRecipe(data);
@@ -43,7 +43,7 @@ export default function RecipeDetailsPage({ params }: RecipePageProps) {
     const confirmed = confirm('Are you sure you want to delete this recipe?');
     if (!confirmed) return;
 
-    const res = await fetch(`api/recipes/${params.id}`, {
+    const res = await fetch(`/api/recipes/${params.id}`, {
       method: 'DELETE',
     });
 
