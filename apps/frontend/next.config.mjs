@@ -3,6 +3,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    instrumentationHook: false,
+  },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
