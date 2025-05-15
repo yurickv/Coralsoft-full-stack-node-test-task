@@ -7,7 +7,7 @@ export default function NewRecipePage() {
   async function handleSubmit(data: CreateRecipeInput) {
     'use server';
 
-    const res = await fetch(`api/recipes/new`, {
+    const res = await fetch(`/api/recipes/new`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
