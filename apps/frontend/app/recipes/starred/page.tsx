@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { RecipeCard } from '../../../components/RecipeCard';
 import { Recipe } from '../../../types/recipe';
 import { PageHeader } from '../../../components/PageHeader';
+export const dynamic = 'force-dynamic';
 
 export default function StarredRecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
