@@ -14,7 +14,7 @@ app.use(express.json());
 app.get('/api/recipes', async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
-    const pageSize = parseInt(req.query.pageSize as string) || 10;
+    const pageSize = parseInt(req.query.limit as string) || 10;
     const category = req.query.category as string | undefined;
     const area = req.query.area as string | undefined;
     const searchQuery = req.query.q as string | undefined;
@@ -37,6 +37,16 @@ app.get('/api/recipes/random', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching random recipe:', error);
     res.status(500).json({ error: 'Failed to fetch random recipe' });
+  }
+});
+app.get('/api/recipes/starred', async (req: Request, res: Response) => {
+  try {
+    const recipes = await recipeService.getStarredRecipes();
+
+    res.json(recipes);
+  } catch (error) {
+    console.error('Error fetching starred recipes:', error);
+    res.status(500).json({ error: 'Failed to fetch starred recipes' });
   }
 });
 
@@ -108,16 +118,6 @@ app.get('/api/areas', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error fetching areas:', error);
     res.status(500).json({ error: 'Failed to fetch areas' });
-  }
-});
-
-app.get('/api/recipes/starred', async (req: Request, res: Response) => {
-  try {
-    const recipes = await recipeService.getStarredRecipes();
-    res.json(recipes);
-  } catch (error) {
-    console.error('Error fetching starred recipes:', error);
-    res.status(500).json({ error: 'Failed to fetch starred recipes' });
   }
 });
 

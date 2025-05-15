@@ -42,8 +42,12 @@ export async function deleteRecipe(id: string): Promise<void> {
 }
 
 export async function getRandomRecipe(): Promise<Recipe> {
-  const res = await fetch(`${API_URL}/random`);
-  if (!res.ok) throw new Error('Failed to fetch random recipe');
+  const res = await fetch('/api/recipes/random');
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch random recipe');
+  }
+
   return res.json();
 }
 
@@ -59,13 +63,12 @@ export async function toggleStar(id: string): Promise<Recipe> {
   });
   if (!res.ok) throw new Error('Failed to toggle star status');
   return res.json();
-} 
+}
 export async function getCategories(): Promise<Category[]> {
   const res = await fetch(`${API_URL}/areas`);
   if (!res.ok) throw new Error('Failed to fetch areas');
   return res.json();
 }
-
 
 export async function getAreas(): Promise<Area[]> {
   const res = await fetch(`${API_URL}/categories`);

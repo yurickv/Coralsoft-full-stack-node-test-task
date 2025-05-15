@@ -5,6 +5,7 @@ interface RecipesViewProps {
   areas: string[];
   searchQuery: string;
   setSearchQuery: (value: string) => void;
+  setPage: (value: number) => void;
   selectedCategory: string;
   setSelectedCategory: (value: string) => void;
   selectedArea: string;
@@ -22,10 +23,12 @@ export function RecipesFilters({
   selectedArea,
   setSelectedArea,
   handleReset,
+  setPage,
 }: RecipesViewProps) {
   const [localSearch, setLocalSearch] = useState(searchQuery);
 
   const handleSearchSubmit = () => {
+    setPage(1);
     setSearchQuery(localSearch.trim());
   };
 
@@ -60,6 +63,7 @@ export function RecipesFilters({
         <select
           value={selectedCategory}
           onChange={(e) => {
+            setPage(1);
             setSelectedCategory(e.target.value);
           }}
           className="px-4 py-2 border rounded-lg"
@@ -75,6 +79,7 @@ export function RecipesFilters({
         <select
           value={selectedArea}
           onChange={(e) => {
+            setPage(1);
             setSelectedArea(e.target.value);
           }}
           className="px-4 py-2 border rounded-lg"

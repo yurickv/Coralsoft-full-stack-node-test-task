@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { UpdateRecipeInput } from '../../../../types/recipe';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_API_URL || 'http://localhost:3001/api';
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   const res = await fetch(`${API_URL}/recipes/${params.id}`, { cache: 'no-store' });

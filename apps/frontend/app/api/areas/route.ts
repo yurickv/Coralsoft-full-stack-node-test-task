@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+const API_URL = process.env.NEXT_API_URL || 'http://localhost:3001/api';
 
 export async function GET() {
-  const res = await fetch('http://localhost:3001/api/areas');
+  const res = await fetch(`${API_URL}/areas`);
   const data = await res.json();
   return NextResponse.json(data);
 }

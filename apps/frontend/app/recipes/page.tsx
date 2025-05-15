@@ -22,19 +22,27 @@ export default function RecipesPage() {
   const limit = 9;
 
   const fetchRecipes = async () => {
-    const params = new URLSearchParams({
-      page: String(page),
-      limit: String(limit),
-      ...(searchQuery && { q: searchQuery }),
-      ...(selectedCategory && { category: selectedCategory }),
-      ...(selectedArea && { area: selectedArea }),
-    });
+    try {
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(limit),
+        ...(searchQuery && { q: searchQuery }),
+        ...(selectedCategory && { category: selectedCategory }),
+        ...(selectedArea && { area: selectedArea }),
+      });
 
-    const res = await fetch(`${API_URL}/recipes?${params.toString()}`);
-    const data = await res.json();
+      const res = await fetch(`${API_URL}/recipes?${params.toString()}`);
 
-    setRecipes(data.content);
-    setTotalPages(data.totalPages);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch recipes: ${res.status}`);
+      }
+
+      const data = await res.json();
+      setRecipes(data.content);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error('Error fetching recipes:', error);
+    }
   };
 
   useEffect(() => {
@@ -94,6 +102,7 @@ export default function RecipesPage() {
         selectedArea={selectedArea}
         setSelectedArea={setSelectedArea}
         handleReset={handleReset}
+        setPage={setPage}
       />
 
       {/* Recipe List */}

@@ -108,6 +108,7 @@ class RecipeService {
             .map(([_, value]) => value as string),
           instructions: meal.strInstructions || '',
           image: meal.strMealThumb,
+          isStarred: false,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         }));
@@ -120,10 +121,9 @@ class RecipeService {
   }
 
   async toggleStar(id: string): Promise<Recipe | null> {
-    const index = this.recipes.findIndex((recipe) => recipe.id === id);
-    if (index === -1) return null;
+    const recipe = this.recipes.find((r) => r.id === id);
+    if (!recipe) return null;
 
-    const recipe = this.recipes[index];
     recipe.isStarred = !recipe.isStarred;
     recipe.updatedAt = new Date().toISOString();
 

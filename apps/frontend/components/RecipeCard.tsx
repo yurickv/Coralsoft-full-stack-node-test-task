@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Recipe } from '../types/recipe';
-import { toggleStar } from '../lib/api';
 
 interface RCProps {
   recipe: Recipe;
@@ -15,7 +14,15 @@ export function RecipeCard({ recipe: initialRecipe }: RCProps) {
   const handleToggleStar = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
-      const updatedRecipe = await toggleStar(recipe.id);
+      const res = await fetch(`/api/recipes/${recipe.id}/toggle-star`, {
+        method: 'POST',
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to toggle star');
+      }
+
+      const updatedRecipe: Recipe = await res.json();
       setRecipe(updatedRecipe);
     } catch (error) {
       console.error('Failed to toggle star:', error);

@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getStarredRecipes } from '../../../lib/api';
-import { RC } from '../../../components/RecipeCard';
+import { RecipeCard } from '../../../components/RecipeCard';
 import { Recipe } from '../../../types/recipe';
 import { PageHeader } from '../../../components/PageHeader';
 
 export default function StarredRecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [isLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadRecipes = async () => {
@@ -17,6 +16,8 @@ export default function StarredRecipesPage() {
         setRecipes(data);
       } catch (error) {
         console.error('Failed to load starred recipes:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -27,12 +28,12 @@ export default function StarredRecipesPage() {
     <div className="container mx-auto p-4">
       <PageHeader title="Starred Recipes" />
 
-      {!isLoading ? (
+      {isLoading ? (
         <div className="text-center">Loading...</div>
       ) : recipes.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {recipes.map((recipe) => (
-            <RC key={recipe.id} recipe={recipe} />
+            <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
         </div>
       ) : (
@@ -40,4 +41,12 @@ export default function StarredRecipesPage() {
       )}
     </div>
   );
+}
+
+async function getStarredRecipes() {
+  const res = await fetch('/api/recipes/starred', { cache: 'no-store' });
+  if (!res.ok) {
+    throw new Error('Failed to fetch starred recipes');
+  }
+  return res.json();
 }
