@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { RecipesFilters } from '../../components/RecipesFilters';
 import { Recipe } from '../../types/recipe';
 import { RecipeCard } from '../../components/RecipeCard';
@@ -19,7 +19,7 @@ export default function RecipesPage() {
 
   const limit = 9;
 
-  const fetchRecipes = async () => {
+  const fetchRecipes = useCallback(async () => {
     try {
       const params = new URLSearchParams({
         page: String(page),
@@ -41,7 +41,7 @@ export default function RecipesPage() {
     } catch (error) {
       console.error('Error fetching recipes:', error);
     }
-  };
+  }, [page, limit, searchQuery, selectedCategory, selectedArea]);
 
   useEffect(() => {
     // Fetch categories and areas metadata
