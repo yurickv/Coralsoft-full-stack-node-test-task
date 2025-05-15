@@ -67,7 +67,7 @@ export default function RecipesPage() {
 
   useEffect(() => {
     fetchRecipes();
-  }, [page, searchQuery, selectedCategory, selectedArea]);
+  }, [page, searchQuery, selectedCategory, selectedArea, fetchRecipes]);
 
   const handleReset = () => {
     setSearchQuery('');
