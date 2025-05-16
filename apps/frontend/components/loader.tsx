@@ -11,7 +11,7 @@ const LoaderComponent = React.forwardRef<HTMLDivElement, LoaderProps>(
     const sizeClasses = {
       sm: 'w-4 h-4',
       default: 'w-6 h-6',
-      lg: 'w-8 h-8',
+      lg: 'w-16 h-16',
     };
 
     const variantClasses = {
