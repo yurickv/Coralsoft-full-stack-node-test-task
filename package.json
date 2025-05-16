@@ -18,5 +18,8 @@
     "prettier": "^3.2.5",
     "turbo": "^1.13.4",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "lucide-react": "^0.511.0"
   }
 }

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { PageHeader } from '../../../components/PageHeader';
+import { Loader } from '../../../components/loader';
 
 interface Recipe {
   id: string;
@@ -54,7 +55,13 @@ export default function RecipeDetailsPage({ params }: RecipePageProps) {
     }
   };
 
-  if (!recipe) return <div>Loading...</div>;
+  if (!recipe)
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <Loader size="lg" variant="primary" className="mb-4" />
+        <p className="text-muted-foreground">Loading recipe details...</p>
+      </div>
+    );
 
   return (
     <div className="container mx-auto p-4">

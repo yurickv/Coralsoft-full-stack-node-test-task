@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Recipe, CreateRecipeInput, UpdateRecipeInput } from '../types/recipe';
-import { getRandomRecipe } from '../lib/api';
+// import { getRandomRecipe } from '../lib/api';
 
 interface RecipeFormProps {
   initialData?: Partial<Recipe>;
@@ -202,4 +202,14 @@ export function RecipeForm({ initialData, onSubmit, submitLabel }: RecipeFormPro
       </button>
     </form>
   );
+}
+
+async function getRandomRecipe(): Promise<Recipe> {
+  const res = await fetch('/api/recipes/random');
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch random recipe');
+  }
+
+  return res.json();
 }

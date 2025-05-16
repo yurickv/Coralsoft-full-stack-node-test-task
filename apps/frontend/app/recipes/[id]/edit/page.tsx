@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { RecipeForm } from '../../../../components/RecipeForm';
 import { UpdateRecipeInput, Recipe } from '../../../../types/recipe';
 import { PageHeader } from '../../../../components/PageHeader';
+import { Loader } from '../../../../components/loader';
 
 interface EditRecipePageProps {
   params: {
@@ -46,7 +47,13 @@ export default function EditRecipePage({ params }: EditRecipePageProps) {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <Loader size="lg" variant="primary" className="mb-4" />
+        <p className="text-muted-foreground">Loading recipe details...</p>
+      </div>
+    );
   if (!recipe) return <p>Recipe not found</p>;
 
   return (

@@ -6,6 +6,7 @@ import { RecipesFilters } from '../../components/RecipesFilters';
 import { Recipe } from '../../types/recipe';
 import { RecipeCard } from '../../components/RecipeCard';
 import { Pagination } from '../../components/Pagintion';
+import { Loader } from '../../components/loader';
 
 export default function RecipesPage() {
   const [categories, setCategories] = useState<string[]>([]);
@@ -16,10 +17,12 @@ export default function RecipesPage() {
   const [selectedArea, setSelectedArea] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const limit = 9;
 
   const fetchRecipes = useCallback(async () => {
+    setLoading(true);
     try {
       const params = new URLSearchParams({
         page: String(page),
@@ -40,6 +43,8 @@ export default function RecipesPage() {
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Error fetching recipes:', error);
+    } finally {
+      setLoading(false);
     }
   }, [page, limit, searchQuery, selectedCategory, selectedArea]);
 
@@ -104,7 +109,12 @@ export default function RecipesPage() {
       />
 
       {/* Recipe List */}
-      {recipes.length > 0 ? (
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-12">
+          <Loader size="lg" variant="primary" className="mb-4" />
+          <p className="text-muted-foreground">Loading recipes...</p>
+        </div>
+      ) : recipes.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recipes.map((recipe) => (
